@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 
@@ -10,9 +11,9 @@ typedef struct {
 	char gunName[30];
 	float impactPower;
 	int angleRange;
-	int mimimumAngle;
+	int minimumAngles;
 	int minimumVelocity;
-	int maxVelocity;
+	int maximumVelocity;
 
 } ES;
 
@@ -23,67 +24,72 @@ typedef struct {
 	char gunName[25];
 } BS;
 
+void getMinMAx(int *min, int  *max);
 int getRandom(int min, int max);
-void initializingBS(ES *EShip, void (*populateminAngle)(ES*, int*, int(*)(int, int)), void (*populateminVelocity)(ES*, int*, int(*)(int,int)), void(*populatemaxVelocity)(ES*, int*, int(*)(int, int)));
-void populateminAngle(ES *Eship, int *minAngle, int(*getRandom)(int, int), int(*getMinMAx)(int, int));
-void populateminVelocity(ES *EShip, int *minVelocity, int(*getRandom)(int, int), int(*getMinMAx)(int, int));
-void populatemaxVelocity(ES *EShip, int * maxVelocity, int(*getRandom)(int, int), int(*getMinMAx)(int,int));
-void getMinMAx(int *min, int *max);
+void initializongES(ES EShips[5]);
+void Canvas(int dim_x, int dim_y);
+void main_menu(ES EShips[5]);
 
-void initializingBS(ES *EShip, void (*populateminAngle)(ES*, int*, int(*)(int, int)), void(*populateminVelocity)(ES* , int* , int(*)(int ,int)), void (*populatemaxVelocity)(ES*, int*, int(*)(int, int)))
-{
+void initializingES(ES EShips[5]){
 	const char *notations[5] = {"EA", "EB", "EC", "ED", "EE"};
 	const char *names[5] = {"1936A-class-Destroyer", "Gabbiano-class-Corvette", "Matsu-class-Destroyer", "F-class-Escort-Ships", "Japanese-Kaibōkan"};
 	const char *gun[5] = {"SK C/34naval gun", "L/47 dualpurpose gun", "Type 89 dualpurpose gun", "SK C/32 naval gun", "(4.7 inch) naval guns"};
 	float impact[5] = {0.08, 0.06, 0.07, 0.05, 0.04};
-	int angleRange[5] = {20,30,25,50,70};
-	int minAngle[5];
-	int minVelocity[5];
-	int maxVelocity[5];
-	populateminAngle(EShip, minAngle, getRandom);
-	populateminVelocity(EShip, minVelocity, getRandom);
-	populatemaxVelocity(EShip, maxVelocity, getRandom);
+	int angle_Range[5] = {20,30,25,50,70};
 	
+
+	int minVAL, maxVAL;
+
+	printf("----------------Setup Minimum Angles-----------------\n");
+	getMinMAx(&minVAL, &maxVAL);
+	for(int i = 0; i < 5; i++){
+		EShips[i].minimumAngles = getRandom(minVAL, maxVAL);
+
+	}
+
+	printf("---------------Setuo Minimum Velocities---------------\n");
+	getMinMAx(&minVAL, &maxVAL);
+	for(int i = 0; i < 5; i++){
+		EShips[i].minimumVelocity = getRandom(minVAL, maxVAL);
+	}
 	
-};
+	printf("---------------Setup Maximum Velocities----------------\n");
+	getMinMAx(&minVAL, &maxVAL);
+	for(int i = 0; i < 5; i++){
+		EShips[i].maximumVelocity = getRandom(minVAL, maxVAL);
+	}
+
+	printf("=========================================================\n");
+	printf("===================GENERATED SHIP DATA===================\n");
+	for(int i = 0; i < 5; i++){
+		strcpy(EShips[i].typeNotation, notations[i]);
+		strcpy(EShips[i].typeName, names[i]);
+		strcpy(EShips[i].gunName, gun[i]);
+		EShips[i].impactPower = impact[i];
+		EShips[i].angleRange = angle_Range[i];
+	}
+
+	printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+	printf("***********************************************************\n");
+	printf("--------------------Displaying Ship Data-------------------\n");
+
+	for(int i = 0; i < 5; i++){
+		printf("Escort Ships Notation: [%c] , Ship Name: %s , Ship Weapon: %s", EShips[i].typeNotation, EShips[i].typeName, EShips[i].gunName);
+		printf("Min Angle: %d , Min Velocity: %d , Max Velocity: %d", EShips[i].minimumAngles, EShips[i].minimumVelocity, EShips[i].maximumVelocity);
+	}
+	printf("++++++++++=======================================+++++++++++\n");
+}
 
 void getMinMAx(int *min, int *max){
 	printf("Enter the min value: ");
-	scanf("%d", &min);
+	scanf("%d", min);
 	printf("Enter the max value: ");
-	scanf("%d", &max);
+	scanf("%d", max);
 }
-void populateminVelocity(ES *EShip, int *minVelocity, int(*getRandom)(int, int), int(*getMinMAx)(int, int)){
 
-	int min;
-	int max;
-	getMinMAx(&min, &max);
-	for(int i = 0; i < 5; i++){
-		minVelocity[i] = getRandom(&min, &max);
-	}
-	
-};
-void populatemaxVelocity(ES * EShip, int * maxVelocity, int(*getRandom)(int, int), int(*getMinMAx)(int,int)){
-	int min;
-	int max;
-	getMinMAx(&min, &max);
-	for(int i = 0; i < 5; i++){
-		maxVelocity[i] = getRandom(&min, &max);
-	}
-
-}
-void populateminAngle(ES *Eship, int *minAngle, int(*getRandom)(int, int), int(*getMinMAx)(int ,int)){
-	int min;
-	int max;
-	getMinMAx(&min, &max);
-	for(int i = 0; i < 5; i++){
-		minAngle[i] = getRandom(&min, &max);
-	}
-
-}
 int getRandom(int min, int max){
-
-		return (rand() % + (max - min + 1)) + min; 
+		if(min >= max) return min;
+		return (rand() % (max - min + 1)) + min; 
 }
 
 void Canvas(int dim_x, int dim_y){
@@ -107,11 +113,15 @@ void Canvas(int dim_x, int dim_y){
 }
 
 
-void main_menu(){
+void main_menu(ES EShips[5]){
 
-	int option;
+	int option = 0;
 
 	do {
+		printf("---------------------------------------------------\n");
+		printf("---------------------------------------------------\n");
+		printf("---------------------------------------------------\n");
+		printf("---------------------------------------------------\n");
 		printf("---------------------------------------------------\n");
 		printf("*************ADVANCED NAVAL SIMULATOR**************\n");
 		printf("***************************************************\n");
@@ -120,15 +130,30 @@ void main_menu(){
 		printf("--------------2.) View Instructions----------------\n");
 		printf("------------3.) Simulation Statistics--------------\n");
 		printf("---------------------4.) Exit----------------------\n");
+		printf("###################################################\n");
+		printf("###################################################\n");
+		printf("###################################################\n");
+		printf("###################################################\n");
+		printf("###################################################\n");
 
-		switch(option != 4){
+		printf("Enter a option you choose\n");
+		scanf("%d", &option);
+
+		switch(option){
 			case 1: 
-					
+					initializingES(EShips);
+					break;
 			case 2:
-
+					printf("Instructions Setup\n");
+					break;
 			case 3:
-
+					printf("No past Statistics available yet.\n");
+					break;
 			case 4:
+					printf("Exiting Program\n");
+					break;
+			default:
+					printf("Option put of range\n");
 		}
 	} while(option != 4);
 
@@ -136,32 +161,13 @@ void main_menu(){
 
 }
 
-int Setup(void (*Canvas)(int, int), 
-		  void(*initializingBS)(ES*, void(*populateminAngle)(ES*, int*, int(*)(int,int)), void(*populateminVelocity)(ES*, int*, int(*)(int, int)), void(*populatemaxVelocity)(ES*, int*, int(*)(int ,int))),
-		  void(*populateminAngle)(ES*, int*, int(*)(int, int), 
-		  void(*populateminVelocity)(ES* , int*, int(*)(int, int), 
-		  void(populatemaxVelocity)(ES* , int*, int(*)(int,int))))){
 
-			int MIN;
-			int MAX;
-			printf("Enter the min and max values: \n");
-
-			//getting the min andmax values from users
-			getMinMAx(&MIN, &MAX);
-			//generating the random values
-			getRandom(MIN, MAX);
-
-			populateminAngle(EShip , *, getRandom);
-			populateminVelocity(EShip, minVelocity, getRandom);
-			populatemaxVelocity(EShip, maxVelocity, getRandom);
-	
-
-
-
-}
 int main(){
 
-	srand(time(0));
+	srand((unsigned int)time(NULL));
+
+	ES Eships[5];
+	main_menu(Eships);
 
 	return 0;
 }
